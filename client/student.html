@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VITONLINE / Student</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:  #ffffff;
+      --off:    #f7f7f7;
+      --ink:    #0a0a0a;
+      --mid:    #444444;
+      --light:  #888888;
+      --faint:  #cccccc;
+      --rule:   #e8e8e8;
+      --accent: #1a56db;
+      --acc-bg: #e8effc;
+      --err:    #c0392b;
+      --err-bg: #fdf3f2;
+      --ok:     #1a6b3a;
+      --ok-bg:  #f0f8f3;
+      --warn:   #7a5500;
+      --warn-bg:#fff8e0;
+      --r:      4px;
+      --nav-w:  220px;
+      --hdr-h:  56px;
+    }
+    html, body { font-family: 'Sora', sans-serif; background: var(--off); color: var(--ink); font-size: 14px; min-height: 100vh; }
+
+    /* HEADER */
+    .hdr { position: sticky; top: 0; z-index: 40; height: var(--hdr-h); background: var(--white); border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .hdr-brand { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
+    .hdr-right { display: flex; align-items: center; gap: 14px; }
+    .hdr-name { font-size: 13px; font-weight: 500; color: var(--mid); }
+    .tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; }
+    .tag-s { background: var(--acc-bg); color: var(--accent); }
+    .btn-out { background: none; border: 1px solid var(--rule); border-radius: var(--r); padding: 5px 12px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 500; color: var(--mid); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-out:hover { border-color: var(--err); color: var(--err); }
+
+    /* LAYOUT */
+    .layout { display: flex; min-height: calc(100vh - var(--hdr-h)); }
+
+    /* NAV */
+    nav { width: var(--nav-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--rule); padding: 28px 0; }
+    .nav-section { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--light); padding: 0 20px; margin-bottom: 6px; margin-top: 20px; }
+    .nav-section:first-child { margin-top: 0; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; font-weight: 500; color: var(--mid); cursor: pointer; border-left: 2px solid transparent; transition: all 0.12s; }
+    .nav-item:hover { color: var(--ink); background: var(--off); }
+    .nav-item.on { color: var(--accent); border-left-color: var(--accent); background: var(--acc-bg); font-weight: 600; }
+    .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* CONTENT */
+    .content { flex: 1; padding: 36px 40px; overflow-y: auto; }
+    .page { display: none; }
+    .page.on { display: block; animation: up 0.18s ease; }
+    @keyframes up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PAGE HEAD */
+    .ph { margin-bottom: 28px; }
+    .ph-title { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+    .ph-sub { font-size: 13px; color: var(--light); margin-top: 4px; }
+
+    /* EXAM GRID */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 22px; transition: border-color 0.15s; }
+    .card:hover:not(.done) { border-color: #c0c0c0; }
+    .card.done { opacity: 0.65; }
+    .card-sub { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 14px; line-height: 1.4; }
+    .card-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .meta { font-size: 12px; color: var(--light); }
+    .meta b { color: var(--mid); font-weight: 500; }
+    .done-label { font-size: 11px; font-weight: 600; color: var(--ok); background: var(--ok-bg); border: 1px solid #c0dfc8; display: inline-block; padding: 3px 9px; border-radius: 2px; margin-top: 2px; }
+    .btn-start { width: 100%; padding: 9px; background: var(--ink); color: var(--white); border: none; border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-start:hover { background: #222222; }
+
+    /* EXAM TAKING */
+    .exam-bar { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 18px 22px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .eb-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+    .eb-sub { font-size: 12px; color: var(--light); margin-top: 2px; }
+    .timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); border: 1px solid var(--rule); padding: 6px 18px; border-radius: var(--r); }
+    .timer.red { color: var(--err); border-color: #f0c0bc; background: var(--err-bg); }
+
+    .q-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 24px; margin-bottom: 12px; }
+    .q-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--light); margin-bottom: 9px; }
+    .q-text { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 18px; line-height: 1.5; }
+    .opts { display: flex; flex-direction: column; gap: 7px; }
+    .opt { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--rule); border-radius: var(--r); cursor: pointer; transition: all 0.12s; }
+    .opt:hover { border-color: #aaaaaa; background: var(--off); }
+    .opt.sel { border-color: var(--accent); background: var(--acc-bg); }
+    .opt-ltr { font-size: 11px; font-weight: 700; color: var(--light); min-width: 16px; }
+    .opt.sel .opt-ltr { color: var(--accent); }
+    .opt-txt { font-size: 13px; color: var(--ink); }
+
+    .action-row { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
+    .btn-submit { padding: 10px 24px; background: var(--ink); color: var(--white); border: none; border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-submit:hover { background: #222222; }
+    .btn-back { padding: 10px 16px; background: none; border: 1px solid var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 13px; color: var(--mid); cursor: pointer; transition: border-color 0.15s; }
+    .btn-back:hover { border-color: var(--mid); }
+    .action-msg { font-size: 13px; color: var(--err); }
+
+    /* RESULT CARD */
+    .result-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 48px 32px; text-align: center; max-width: 400px; margin: 0 auto; }
+    .rc-score { font-size: 52px; font-weight: 700; letter-spacing: -1px; color: var(--ink); }
+    .rc-pct { font-size: 16px; color: var(--light); margin-top: 4px; }
+    .rc-grade { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 700; padding: 4px 16px; border-radius: 2px; }
+    .g-ap { background: var(--ok-bg); color: var(--ok); border: 1px solid #b8dfc6; }
+    .g-a  { background: var(--acc-bg); color: var(--accent); border: 1px solid #b8ccf0; }
+    .g-b  { background: var(--warn-bg); color: var(--warn); border: 1px solid #e0d080; }
+    .g-c  { background: var(--err-bg); color: var(--err); border: 1px solid #f0c0bc; }
+    .rc-exam { font-size: 13px; color: var(--light); margin-top: 14px; }
+
+    /* TABLES */
+    .tbl-wrap { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { background: var(--off); border-bottom: 1px solid var(--rule); padding: 11px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--light); text-align: left; }
+    tbody td { padding: 13px 16px; border-bottom: 1px solid var(--rule); font-size: 13px; color: var(--ink); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--off); }
+    .pct-bar { height: 3px; background: var(--rule); border-radius: 2px; margin-top: 5px; }
+    .pct-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+
+    /* MISC */
+    .loader { padding: 60px; text-align: center; font-size: 13px; color: var(--light); }
+    .empty { padding: 60px 20px; text-align: center; font-size: 13px; color: var(--light); }
+    .alert { padding: 11px 13px; border-radius: var(--r); font-size: 13px; margin-bottom: 16px; }
+    .alert.err { background: var(--err-bg); border: 1px solid #f0c0bc; color: var(--err); }
+    .alert.ok  { background: var(--ok-bg);  border: 1px solid #b8dfc6; color: var(--ok); }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">VITONLINE</div>
+  <div class="hdr-right">
+    <span class="hdr-name" id="hdrName"></span>
+    <span class="tag tag-s">Student</span>
+    <button class="btn-out" onclick="logout()">Sign out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav>
+    <div class="nav-section">Menu</div>
+    <div class="nav-item on" id="n-exams" onclick="go('exams','n-exams')">
+      <span class="nav-dot"></span> Exams
+    </div>
+    <div class="nav-item" id="n-results" onclick="go('results','n-results'); loadResults();">
+      <span class="nav-dot"></span> My Results
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- EXAMS -->
+    <div id="exams" class="page on">
+      <div class="ph">
+        <div class="ph-title">Available Exams</div>
+        <div class="ph-sub">Select an exam to begin. Submitted exams are locked.</div>
+      </div>
+      <div id="exams-alert"></div>
+      <div id="exams-body"><div class="loader">Loading exams...</div></div>
+    </div>
+
+    <!-- TAKE EXAM -->
+    <div id="take" class="page">
+      <div class="exam-bar">
+        <div>
+          <div class="eb-title" id="ex-title"></div>
+          <div class="eb-sub" id="ex-sub"></div>
+        </div>
+        <div class="timer" id="timer">--:--</div>
+      </div>
+      <div id="qlist"></div>
+      <div class="action-row">
+        <button class="btn-back" onclick="go('exams','n-exams')">Back</button>
+        <button class="btn-submit" onclick="submitExam()">Submit Exam</button>
+        <span class="action-msg" id="sub-msg"></span>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" class="page">
+      <div class="ph">
+        <div class="ph-title">My Results</div>
+        <div class="ph-sub">Performance across all submitted exams.</div>
+      </div>
+      <div id="results-body"><div class="loader">Loading...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt_token');
+  const name  = localStorage.getItem('user_name') || 'Student';
+  let curExam = null, timerIv = null;
+
+  if (!token) { window.location.href = '/'; }
+  document.getElementById('hdrName').textContent = name;
+  loadExams();
+
+  function go(id, navId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    if (navId) document.getElementById(navId).classList.add('on');
+  }
+
+  async function api(url, opts={}) {
+    return fetch(url, { ...opts, headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token, ...(opts.headers||{}) } });
+  }
+
+  async function loadExams() {
+    const res  = await api('/api/student/exams');
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('exams-body').innerHTML = `<div class="alert err">${data.message}</div>`; return; }
+    if (!data.exams.length) { document.getElementById('exams-body').innerHTML = '<div class="empty">No exams available.</div>'; return; }
+    document.getElementById('exams-body').innerHTML = `<div class="grid">${data.exams.map(e=>`
+      <div class="card ${e.submitted?'done':''}">
+        <div class="card-sub">${e.subject}</div>
+        <div class="card-title">${e.title}</div>
+        <div class="card-meta">
+          <div class="meta"><b>${e.questionCount}</b> questions</div>
+          <div class="meta"><b>${e.duration}</b> min</div>
+          <div class="meta">${e.createdByName}</div>
+        </div>
+        ${e.submitted ? '<div class="done-label">Submitted</div>' : `<button class="btn-start" onclick="startExam(${e.id},'${e.title}','${e.subject}',${e.duration})">Start Exam</button>`}
+      </div>`).join('')}</div>`;
+  }
+
+  async function startExam(id, title, subject, dur) {
+    curExam = id;
+    document.getElementById('ex-title').textContent = title;
+    document.getElementById('ex-sub').textContent   = subject;
+    go('take', null);
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+    document.getElementById('qlist').innerHTML = '<div class="loader">Loading questions...</div>';
+
+    const res  = await api('/api/student/exams/'+id);
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('qlist').innerHTML=`<div class="alert err">${data.message}</div>`; return; }
+
+    document.getElementById('qlist').innerHTML = data.exam.questions.map((q,i)=>`
+      <div class="q-card">
+        <div class="q-label">Question ${i+1} of ${data.exam.questions.length}</div>
+        <div class="q-text">${q.text}</div>
+        <div class="opts">
+          ${q.options.map((o,idx)=>`
+            <div class="opt" id="o_${q.id}_${idx}" onclick="pick(${q.id},${idx})">
+              <span class="opt-ltr">${String.fromCharCode(65+idx)}</span>
+              <span class="opt-txt">${o}</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    startTimer(dur*60);
+  }
+
+  function pick(qId, idx) {
+    document.querySelectorAll(`[id^="o_${qId}_"]`).forEach(el=>el.classList.remove('sel'));
+    const el = document.getElementById(`o_${qId}_${idx}`);
+    el.classList.add('sel');
+    el.dataset.sel = idx;
+  }
+
+  function startTimer(secs) {
+    clearInterval(timerIv);
+    let s = secs;
+    const tick = () => {
+      const m = Math.floor(s/60).toString().padStart(2,'0');
+      const sec = (s%60).toString().padStart(2,'0');
+      const el = document.getElementById('timer');
+      el.textContent = m+':'+sec;
+      el.classList.toggle('red', s<=60);
+      if (s-- <= 0) { clearInterval(timerIv); submitExam(); }
+    };
+    tick(); timerIv = setInterval(tick, 1000);
+  }
+
+  async function submitExam() {
+    clearInterval(timerIv);
+    const answers = {};
+    document.querySelectorAll('.q-card').forEach(card=>{
+      const sel = card.querySelector('.opt.sel');
+      if (sel) { const [,qId] = sel.id.split('_'); answers[parseInt(qId)] = parseInt(sel.dataset.sel); }
+    });
+    document.getElementById('sub-msg').textContent = 'Submitting...';
+    const res  = await api('/api/student/exams/'+curExam+'/submit', { method:'POST', body: JSON.stringify({answers}) });
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('sub-msg').textContent = data.message; return; }
+    const r = data.result;
+    const gc = r.grade==='A+'?'g-ap':r.grade==='A'?'g-a':r.grade==='B'?'g-b':'g-c';
+    document.getElementById('qlist').innerHTML = `
+      <div class="result-card">
+        <div class="rc-score">${r.score} / ${r.total}</div>
+        <div class="rc-pct">${r.percentage}%</div>
+        <div class="rc-grade ${gc}">Grade: ${r.grade}</div>
+        <div class="rc-exam">${r.examTitle}</div>
+      </div>`;
+    document.getElementById('sub-msg').textContent = '';
+    loadExams();
+  }
+
+  async function loadResults() {
+    document.getElementById('results-body').innerHTML = '<div class="loader">Loading...</div>';
+    const res  = await api('/api/student/results');
+    const data = await res.json();
+    if (!data.results?.length) { document.getElementById('results-body').innerHTML='<div class="empty">No results yet. Complete an exam first.</div>'; return; }
+    document.getElementById('results-body').innerHTML = `
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Exam</th><th>Subject</th><th>Score</th><th>Percentage</th><th>Grade</th><th>Date</th></tr></thead>
+        <tbody>${data.results.map(r=>{
+          const g = parseFloat(r.percentage)===100?'A+':parseFloat(r.percentage)>=80?'A':parseFloat(r.percentage)>=60?'B':'C';
+          const gc = g==='A+'?'g-ap':g==='A'?'g-a':g==='B'?'g-b':'g-c';
+          return `<tr>
+            <td style="font-weight:500">${r.examTitle}</td>
+            <td style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent)">${r.subject}</td>
+            <td>${r.score} / ${r.total}</td>
+            <td><div>${r.percentage}%</div><div class="pct-bar"><div class="pct-fill" style="width:${r.percentage}%"></div></div></td>
+            <td><span class="rc-grade ${gc}" style="margin:0;font-size:11px;padding:2px 9px">${g}</span></td>
+            <td style="color:var(--light)">${new Date(r.submittedAt).toLocaleDateString('en-IN')}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+  }
+
+  function logout() { localStorage.clear(); window.location.href='/'; }
+</script>
+</body>
+</html>

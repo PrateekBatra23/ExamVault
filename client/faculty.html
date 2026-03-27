@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VITONLINE / Faculty</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:  #ffffff;
+      --off:    #f7f7f7;
+      --ink:    #0a0a0a;
+      --mid:    #444444;
+      --light:  #888888;
+      --faint:  #cccccc;
+      --rule:   #e8e8e8;
+      --accent: #1a56db;
+      --acc-bg: #e8effc;
+      --f-acc:  #7a3500;
+      --f-bg:   #fff0e0;
+      --err:    #c0392b;
+      --err-bg: #fdf3f2;
+      --ok:     #1a6b3a;
+      --ok-bg:  #f0f8f3;
+      --warn:   #7a5500;
+      --warn-bg:#fff8e0;
+      --r:      4px;
+      --hdr-h:  56px;
+      --nav-w:  220px;
+    }
+    html, body { font-family: 'Sora', sans-serif; background: var(--off); color: var(--ink); font-size: 14px; min-height: 100vh; }
+
+    /* HEADER */
+    .hdr { position: sticky; top: 0; z-index: 40; height: var(--hdr-h); background: var(--white); border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .hdr-brand { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+    .hdr-right { display: flex; align-items: center; gap: 14px; }
+    .hdr-name { font-size: 13px; font-weight: 500; color: var(--mid); }
+    .tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; }
+    .tag-f { background: var(--f-bg); color: var(--f-acc); }
+    .btn-out { background: none; border: 1px solid var(--rule); border-radius: var(--r); padding: 5px 12px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 500; color: var(--mid); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-out:hover { border-color: var(--err); color: var(--err); }
+
+    /* LAYOUT */
+    .layout { display: flex; min-height: calc(100vh - var(--hdr-h)); }
+
+    /* NAV */
+    nav { width: var(--nav-w); flex-shrink: 0; background: var(--white); border-right: 1px solid var(--rule); padding: 28px 0; }
+    .nav-section { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--light); padding: 0 20px; margin-bottom: 6px; margin-top: 20px; }
+    .nav-section:first-child { margin-top: 0; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; font-weight: 500; color: var(--mid); cursor: pointer; border-left: 2px solid transparent; transition: all 0.12px; }
+    .nav-item:hover { color: var(--ink); background: var(--off); }
+    .nav-item.on { color: var(--f-acc); border-left-color: var(--f-acc); background: var(--f-bg); font-weight: 600; }
+    .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* CONTENT */
+    .content { flex: 1; padding: 36px 40px; overflow-y: auto; }
+    .page { display: none; }
+    .page.on { display: block; animation: up 0.18s ease; }
+    @keyframes up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .ph { margin-bottom: 28px; }
+    .ph-title { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+    .ph-sub { font-size: 13px; color: var(--light); margin-top: 4px; }
+
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 20px 18px; }
+    .stat-val { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+    .stat-label { font-size: 12px; color: var(--light); margin-top: 4px; font-weight: 500; }
+
+    /* TABLE */
+    .tbl-wrap { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { background: var(--off); border-bottom: 1px solid var(--rule); padding: 11px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--light); text-align: left; white-space: nowrap; }
+    tbody td { padding: 13px 16px; border-bottom: 1px solid var(--rule); font-size: 13px; color: var(--ink); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--off); }
+
+    .pct-bar { height: 3px; background: var(--rule); border-radius: 2px; margin-top: 5px; }
+    .pct-fill { height: 100%; border-radius: 2px; background: var(--f-acc); }
+    .grade-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 2px; }
+    .g-ap { background: var(--ok-bg); color: var(--ok); }
+    .g-a  { background: var(--acc-bg); color: var(--accent); }
+    .g-b  { background: var(--warn-bg); color: var(--warn); }
+    .g-c  { background: var(--err-bg); color: var(--err); }
+
+    /* BUTTONS in table */
+    .btn-xs { padding: 4px 10px; font-size: 11px; font-weight: 600; font-family: 'Sora', sans-serif; border-radius: var(--r); cursor: pointer; transition: all 0.12s; }
+    .btn-xs-outline { background: none; border: 1px solid var(--rule); color: var(--mid); }
+    .btn-xs-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-xs-del { background: none; border: 1px solid #f0c0bc; color: var(--err); }
+    .btn-xs-del:hover { background: var(--err-bg); }
+    .btn-row { display: flex; gap: 6px; }
+
+    /* FORM */
+    .form-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 30px; max-width: 680px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { margin-bottom: 16px; }
+    .field-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .field-input { width: 100%; padding: 10px 13px; border: 1px solid var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 13px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.15s; }
+    .field-input:focus { border-color: var(--accent); }
+    .section-divider { font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin: 22px 0 12px; padding-bottom: 9px; border-bottom: 1px solid var(--rule); }
+    .q-block { border: 1px solid var(--rule); border-radius: var(--r); padding: 18px; margin-bottom: 10px; position: relative; background: var(--off); }
+    .q-block-num { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--light); margin-bottom: 10px; }
+    .opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+    .opt-input { width: 100%; padding: 8px 10px; border: 1px solid var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 12px; color: var(--ink); outline: none; background: var(--white); }
+    .opt-input:focus { border-color: var(--accent); }
+    .correct-select { width: 100%; padding: 8px 10px; border: 1px solid var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 12px; color: var(--ink); outline: none; background: var(--white); margin-top: 6px; }
+    .btn-remove-q { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 16px; color: var(--light); cursor: pointer; padding: 2px 5px; border-radius: var(--r); }
+    .btn-remove-q:hover { background: var(--err-bg); color: var(--err); }
+    .btn-add-q { width: 100%; padding: 10px; background: none; border: 1px dashed var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 13px; color: var(--light); cursor: pointer; transition: all 0.15s; margin-bottom: 16px; }
+    .btn-add-q:hover { border-color: var(--mid); color: var(--mid); }
+    .btn-primary { padding: 10px 24px; background: var(--ink); color: var(--white); border: none; border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: #222222; }
+
+    /* MISC */
+    .alert { padding: 11px 13px; border-radius: var(--r); font-size: 13px; margin-bottom: 14px; }
+    .alert.err { background: var(--err-bg); border: 1px solid #f0c0bc; color: var(--err); }
+    .alert.ok  { background: var(--ok-bg);  border: 1px solid #b8dfc6; color: var(--ok); }
+    .loader { padding: 60px; text-align: center; font-size: 13px; color: var(--light); }
+    .empty { padding: 60px 20px; text-align: center; font-size: 13px; color: var(--light); }
+    .sub-info { display: flex; gap: 24px; margin-bottom: 16px; padding: 14px 16px; background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); align-items: center; flex-wrap: wrap; }
+    .si-label { font-size: 12px; color: var(--light); }
+    .si-val { font-weight: 600; color: var(--ink); }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">VITONLINE</div>
+  <div class="hdr-right">
+    <span class="hdr-name" id="hdrName"></span>
+    <span class="tag tag-f">Faculty</span>
+    <button class="btn-out" onclick="logout()">Sign out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav>
+    <div class="nav-section">Menu</div>
+    <div class="nav-item on" id="n-overview" onclick="go('overview','n-overview'); loadOverview();">
+      <span class="nav-dot"></span> Overview
+    </div>
+    <div class="nav-item" id="n-create" onclick="go('create','n-create')">
+      <span class="nav-dot"></span> Create Exam
+    </div>
+    <div class="nav-item" id="n-subs" onclick="go('subs','n-subs'); loadSubs();">
+      <span class="nav-dot"></span> Submissions
+    </div>
+    <div class="nav-item" id="n-results" onclick="go('results','n-results'); loadResults();">
+      <span class="nav-dot"></span> Results
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div id="overview" class="page on">
+      <div class="ph">
+        <div class="ph-title">Overview</div>
+        <div class="ph-sub">All exams and submission activity.</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="s-exams">-</div><div class="stat-label">Total Exams</div></div>
+        <div class="stat"><div class="stat-val" id="s-subs">-</div><div class="stat-label">Submissions</div></div>
+        <div class="stat"><div class="stat-val" id="s-qs">-</div><div class="stat-label">Questions</div></div>
+      </div>
+      <div id="ov-alert"></div>
+      <div id="ov-body"><div class="loader">Loading...</div></div>
+    </div>
+
+    <!-- CREATE -->
+    <div id="create" class="page">
+      <div class="ph">
+        <div class="ph-title">Create Exam</div>
+        <div class="ph-sub">Set up a new exam with questions and answer options.</div>
+      </div>
+      <div class="form-card">
+        <div id="cr-alert"></div>
+        <div class="form-row">
+          <div class="field">
+            <label class="field-label">Exam Title</label>
+            <input type="text" class="field-input" id="f-title" placeholder="e.g. Data Structures Unit 1"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Subject Code</label>
+            <input type="text" class="field-input" id="f-subject" placeholder="e.g. CS301"/>
+          </div>
+        </div>
+        <div class="field" style="max-width:200px">
+          <label class="field-label">Duration (minutes)</label>
+          <input type="number" class="field-input" id="f-dur" value="60" min="5" max="180"/>
+        </div>
+        <div class="section-divider">Questions</div>
+        <div id="q-builder"></div>
+        <button class="btn-add-q" onclick="addQ()">+ Add Question</button>
+        <button class="btn-primary" onclick="createExam()">Create Exam</button>
+      </div>
+    </div>
+
+    <!-- SUBMISSIONS -->
+    <div id="subs" class="page">
+      <div class="ph">
+        <div class="ph-title">Submissions</div>
+        <div class="ph-sub">All student exam submissions.</div>
+      </div>
+      <div id="subs-body"><div class="loader">Loading...</div></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" class="page">
+      <div class="ph">
+        <div class="ph-title">Results</div>
+        <div class="ph-sub">Performance statistics per exam.</div>
+      </div>
+      <div id="res-body"><div class="loader">Loading...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt_token');
+  const name  = localStorage.getItem('user_name') || 'Faculty';
+  let qc = 0;
+
+  if (!token) { window.location.href = '/'; }
+  document.getElementById('hdrName').textContent = name;
+  loadOverview(); addQ();
+
+  function go(id, navId) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    if (navId) document.getElementById(navId).classList.add('on');
+  }
+
+  async function api(url, opts={}) {
+    return fetch(url, { ...opts, headers: {'Content-Type':'application/json','Authorization':'Bearer '+token,...(opts.headers||{})} });
+  }
+
+  async function loadOverview() {
+    const [er, sr] = await Promise.all([api('/api/faculty/exams'), api('/api/faculty/submissions')]);
+    const ed = await er.json(); const sd = await sr.json();
+
+    if (!er.ok) {
+      document.getElementById('ov-alert').innerHTML = `<div class="alert err">${ed.message}</div>`;
+      document.getElementById('ov-body').innerHTML = '';
+      return;
+    }
+
+    document.getElementById('s-exams').textContent = ed.exams.length;
+    document.getElementById('s-subs').textContent  = sd.totalSubmissions||0;
+    document.getElementById('s-qs').textContent    = ed.exams.reduce((a,e)=>a+e.questionCount,0);
+
+    if (!ed.exams.length) { document.getElementById('ov-body').innerHTML='<div class="empty">No exams yet.</div>'; return; }
+
+    document.getElementById('ov-body').innerHTML = `
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Title</th><th>Subject</th><th>Questions</th><th>Duration</th><th>Submissions</th><th>Created By</th><th>Actions</th></tr></thead>
+        <tbody>${ed.exams.map(e=>`
+          <tr>
+            <td style="font-weight:500">${e.title}</td>
+            <td style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--f-acc)">${e.subject}</td>
+            <td>${e.questionCount}</td>
+            <td>${e.duration} min</td>
+            <td>${e.submissionCount}</td>
+            <td style="color:var(--light)">${e.createdByName}</td>
+            <td><div class="btn-row">
+              <button class="btn-xs btn-xs-outline" onclick="viewSubs(${e.id},'${e.title}')">Submissions</button>
+              <button class="btn-xs btn-xs-del" onclick="delExam(${e.id},'${e.title}')">Delete</button>
+            </div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+  }
+
+  function addQ() {
+    qc++;
+    const d = document.createElement('div');
+    d.className = 'q-block'; d.id = 'q_'+qc;
+    d.innerHTML = `
+      <div class="q-block-num">Question ${qc}</div>
+      ${qc>1?`<button class="btn-remove-q" onclick="this.closest('.q-block').remove()">x</button>`:''}
+      <div class="field"><input type="text" class="field-input" placeholder="Question text..." id="qt_${qc}"/></div>
+      <div class="opts-grid">
+        <input type="text" class="opt-input" placeholder="Option A" id="qo_${qc}_0"/>
+        <input type="text" class="opt-input" placeholder="Option B" id="qo_${qc}_1"/>
+        <input type="text" class="opt-input" placeholder="Option C" id="qo_${qc}_2"/>
+        <input type="text" class="opt-input" placeholder="Option D" id="qo_${qc}_3"/>
+      </div>
+      <select class="correct-select" id="qc_${qc}">
+        <option value="0">Correct: Option A</option>
+        <option value="1">Correct: Option B</option>
+        <option value="2">Correct: Option C</option>
+        <option value="3">Correct: Option D</option>
+      </select>`;
+    document.getElementById('q-builder').appendChild(d);
+  }
+
+  async function createExam() {
+    const title   = document.getElementById('f-title').value.trim();
+    const subject = document.getElementById('f-subject').value.trim();
+    const dur     = parseInt(document.getElementById('f-dur').value);
+    if (!title||!subject||!dur) { showAlert('cr-alert','err','All fields are required.'); return; }
+
+    const questions = [];
+    document.querySelectorAll('.q-block').forEach(b=>{
+      const id   = b.id.split('_')[1];
+      const text = document.getElementById('qt_'+id)?.value?.trim();
+      const opts = [0,1,2,3].map(i=>document.getElementById('qo_'+id+'_'+i)?.value?.trim()).filter(Boolean);
+      const cor  = parseInt(document.getElementById('qc_'+id)?.value||0);
+      if (text && opts.length>=2) questions.push({text,options:opts,correct:cor});
+    });
+
+    if (!questions.length) { showAlert('cr-alert','err','Add at least one question.'); return; }
+
+    const res  = await api('/api/faculty/exams',{method:'POST',body:JSON.stringify({title,subject,duration:dur,questions})});
+    const data = await res.json();
+    if (!res.ok) { showAlert('cr-alert','err',data.message); return; }
+    showAlert('cr-alert','ok','Exam "'+title+'" created with '+questions.length+' question(s).');
+    document.getElementById('f-title').value='';
+    document.getElementById('f-subject').value='';
+    document.getElementById('q-builder').innerHTML='';
+    qc=0; addQ();
+  }
+
+  async function loadSubs() {
+    document.getElementById('subs-body').innerHTML='<div class="loader">Loading...</div>';
+    const res  = await api('/api/faculty/submissions');
+    const data = await res.json();
+    if (!data.submissions?.length) { document.getElementById('subs-body').innerHTML='<div class="empty">No submissions yet.</div>'; return; }
+    document.getElementById('subs-body').innerHTML=`
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>#</th><th>Student</th><th>Exam</th><th>Score</th><th>Percentage</th><th>Grade</th><th>Date</th></tr></thead>
+        <tbody>${data.submissions.map((s,i)=>{
+          const gc=s.grade==='A+'?'g-ap':s.grade==='A'?'g-a':s.grade==='B'?'g-b':'g-c';
+          return `<tr>
+            <td style="color:var(--light)">${i+1}</td>
+            <td style="font-weight:500">${s.student}</td>
+            <td style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--f-acc)">${s.exam}</td>
+            <td>${s.score}/${s.total}</td>
+            <td><div>${s.percentage}%</div><div class="pct-bar"><div class="pct-fill" style="width:${s.percentage}%"></div></div></td>
+            <td><span class="grade-pill ${gc}">${s.grade}</span></td>
+            <td style="color:var(--light)">${new Date(s.submittedAt).toLocaleDateString('en-IN')}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+  }
+
+  async function viewSubs(examId, title) {
+    go('subs','n-subs');
+    document.getElementById('subs-body').innerHTML='<div class="loader">Loading...</div>';
+    const res  = await api('/api/faculty/submissions/'+examId);
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('subs-body').innerHTML=`<div class="alert err">${data.message}</div>`; return; }
+    document.getElementById('subs-body').innerHTML=`
+      <div class="sub-info">
+        <div><div style="font-weight:600;font-size:15px">${data.exam.title}</div><div class="si-label">${data.exam.subject}</div></div>
+        <div><span class="si-label">Submissions: </span><span class="si-val">${data.stats.totalSubmissions}</span></div>
+        <div><span class="si-label">Average Score: </span><span class="si-val">${data.stats.averageScore}</span></div>
+      </div>
+      ${!data.submissions.length?'<div class="empty">No submissions for this exam.</div>':`
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Student</th><th>Score</th><th>Percentage</th><th>Submitted</th></tr></thead>
+        <tbody>${data.submissions.map(s=>`<tr>
+          <td style="font-weight:500">${s.student}</td>
+          <td>${s.score}/${s.total}</td>
+          <td><div>${s.percentage}%</div><div class="pct-bar"><div class="pct-fill" style="width:${s.percentage}%"></div></div></td>
+          <td style="color:var(--light)">${new Date(s.submittedAt).toLocaleString('en-IN')}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`}`;
+  }
+
+  async function loadResults() {
+    document.getElementById('res-body').innerHTML='<div class="loader">Loading...</div>';
+    const res  = await api('/api/faculty/results');
+    const data = await res.json();
+    document.getElementById('res-body').innerHTML=`
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Exam</th><th>Subject</th><th>Students</th><th>Avg Score</th><th>Avg %</th><th>Highest</th><th>Lowest</th></tr></thead>
+        <tbody>${data.results.map(r=>`<tr>
+          <td style="font-weight:500">${r.examTitle}</td>
+          <td style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--f-acc)">${r.subject}</td>
+          <td>${r.totalStudents}</td>
+          <td>${r.averageScore}</td>
+          <td><div>${r.averagePercentage}%</div><div class="pct-bar"><div class="pct-fill" style="width:${r.averagePercentage}%"></div></div></td>
+          <td style="color:var(--ok);font-weight:600">${r.highestScore}</td>
+          <td style="color:var(--err);font-weight:600">${r.lowestScore}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`;
+  }
+
+  async function delExam(id, title) {
+    if (!confirm('Delete "'+title+'"? All related submissions will also be removed.')) return;
+    const res  = await api('/api/faculty/exams/'+id,{method:'DELETE'});
+    const data = await res.json();
+    alert(data.message);
+    loadOverview();
+  }
+
+  function showAlert(id, type, msg) { document.getElementById(id).innerHTML=`<div class="alert ${type}">${msg}</div>`; }
+  function logout() { localStorage.clear(); window.location.href='/'; }
+</script>
+</body>
+</html>

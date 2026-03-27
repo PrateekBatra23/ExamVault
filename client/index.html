@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VITONLINE / Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:   #ffffff;
+      --off:     #f9f9f9;
+      --ink:     #0a0a0a;
+      --mid:     #444444;
+      --light:   #888888;
+      --faint:   #cccccc;
+      --rule:    #e8e8e8;
+      --accent:  #1a56db;
+      --acc-bg:  #e8effc;
+      --err:     #c0392b;
+      --err-bg:  #fdf3f2;
+      --ok:      #1a6b3a;
+      --ok-bg:   #f0f8f3;
+      --r:       4px;
+    }
+    html, body { height: 100%; font-family: 'Sora', sans-serif; background: var(--white); color: var(--ink); font-size: 14px; line-height: 1.5; }
+
+    .wrap { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+
+    /* LEFT */
+    .left { background: var(--ink); color: var(--white); padding: 64px 56px; display: flex; flex-direction: column; justify-content: space-between; }
+    .brand { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #aaaaaa; }
+    .left-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .left-heading { font-size: 38px; font-weight: 700; line-height: 1.1; letter-spacing: -0.6px; margin-bottom: 18px; }
+    .left-sub { font-size: 14px; font-weight: 300; color: #888888; line-height: 1.75; max-width: 300px; }
+    .steps { margin-top: 48px; }
+    .step { display: flex; gap: 16px; align-items: flex-start; padding: 13px 0; border-top: 1px solid #1e1e1e; }
+    .step:last-child { border-bottom: 1px solid #1e1e1e; }
+    .step-n { font-size: 11px; font-weight: 600; color: #444444; min-width: 20px; padding-top: 2px; letter-spacing: 0.04em; }
+    .step-label { font-size: 13px; font-weight: 500; color: var(--white); }
+    .step-desc { font-size: 12px; color: #666666; margin-top: 1px; font-weight: 300; }
+    .left-foot { font-size: 12px; color: #444444; }
+
+    /* RIGHT */
+    .right { padding: 64px 56px; display: flex; align-items: center; justify-content: center; }
+    .form-wrap { width: 100%; max-width: 360px; }
+    .form-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .form-sub { font-size: 13px; color: var(--mid); margin-bottom: 36px; }
+    .field { margin-bottom: 18px; }
+    .field-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid); margin-bottom: 7px; }
+    .field-input { width: 100%; padding: 11px 13px; border: 1px solid var(--rule); border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.15s; }
+    .field-input:focus { border-color: var(--accent); }
+    .field-input::placeholder { color: var(--faint); }
+    .btn { width: 100%; padding: 12px; background: var(--ink); color: var(--white); border: none; border-radius: var(--r); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 0.01em; transition: background 0.15s; margin-top: 4px; }
+    .btn:hover:not(:disabled) { background: #222222; }
+    .btn:disabled { background: var(--faint); cursor: not-allowed; }
+    .msg { padding: 11px 13px; border-radius: var(--r); font-size: 13px; margin-top: 14px; display: none; }
+    .msg.err { background: var(--err-bg); border: 1px solid #f0c0bc; color: var(--err); display: block; }
+    .msg.ok  { background: var(--ok-bg);  border: 1px solid #b8dfc6; color: var(--ok);  display: block; }
+    .accounts { margin-top: 30px; border-top: 1px solid var(--rule); padding-top: 22px; }
+    .accounts-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--light); margin-bottom: 10px; }
+    .account-row { display: flex; align-items: center; gap: 10px; padding: 8px 8px; border-radius: var(--r); cursor: pointer; transition: background 0.1s; }
+    .account-row:hover { background: var(--off); }
+    .tag { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; min-width: 54px; text-align: center; }
+    .tag-f { background: #fff0e0; color: #7a3500; }
+    .tag-s { background: var(--acc-bg); color: var(--accent); }
+    .a-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .a-pass { font-size: 12px; color: var(--light); margin-left: auto; }
+
+    @media (max-width: 768px) {
+      .wrap { grid-template-columns: 1fr; }
+      .left { display: none; }
+      .right { padding: 48px 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="left">
+    <div class="brand">VITONLINE</div>
+    <div class="left-mid">
+      <div class="left-heading">Secure<br/>Exam Portal</div>
+      <div class="left-sub">JWT authentication with role-based access control for faculty and students.</div>
+      <div class="steps">
+        <div class="step"><span class="step-n">01</span><div><div class="step-label">Login Request</div><div class="step-desc">POST /api/auth/login</div></div></div>
+        <div class="step"><span class="step-n">02</span><div><div class="step-label">JWT Generation</div><div class="step-desc">HS256 signed token, role embedded</div></div></div>
+        <div class="step"><span class="step-n">03</span><div><div class="step-label">Token Usage</div><div class="step-desc">Authorization: Bearer [token]</div></div></div>
+        <div class="step"><span class="step-n">04</span><div><div class="step-label">Token Verification</div><div class="step-desc">Signature, expiry, integrity checked</div></div></div>
+        <div class="step"><span class="step-n">05</span><div><div class="step-label">Role Authorization</div><div class="step-desc">student or faculty enforced</div></div></div>
+        <div class="step"><span class="step-n">06</span><div><div class="step-label">Access Control</div><div class="step-desc">200 granted or 401/403 denied</div></div></div>
+      </div>
+    </div>
+    <div class="left-foot">JWT + Role-Based Access Control</div>
+  </div>
+
+  <div class="right">
+    <div class="form-wrap">
+      <div class="form-title">Sign in</div>
+      <div class="form-sub">Enter your credentials to continue.</div>
+
+      <div class="field">
+        <label class="field-label" for="u">Username</label>
+        <input id="u" type="text" class="field-input" placeholder="e.g. student1" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label class="field-label" for="p">Password</label>
+        <input id="p" type="password" class="field-input" placeholder="Enter password"/>
+      </div>
+
+      <button class="btn" id="btn" onclick="doLogin()">Sign in</button>
+      <div class="msg" id="msg"></div>
+
+      <div class="accounts">
+        <div class="accounts-label">Test accounts</div>
+        <div class="account-row" onclick="fill('faculty1','faculty123')"><span class="tag tag-f">Faculty</span><span class="a-name">faculty1</span><span class="a-pass">faculty123</span></div>
+        <div class="account-row" onclick="fill('Islabudeen M','faculty123')"><span class="tag tag-f">Faculty</span><span class="a-name">Islabudeen M</span><span class="a-pass">faculty123</span></div>
+        <div class="account-row" onclick="fill('student1','student123')"><span class="tag tag-s">Student</span><span class="a-name">student1</span><span class="a-pass">student123</span></div>
+        <div class="account-row" onclick="fill('Prateek Batra','student123')"><span class="tag tag-s">Student</span><span class="a-name">Prateek Batra</span><span class="a-pass">student123</span></div>
+        <div class="account-row" onclick="fill('student3','student123')"><span class="tag tag-s">Student</span><span class="a-name">student3</span><span class="a-pass">student123</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  function fill(u, p) { document.getElementById('u').value = u; document.getElementById('p').value = p; }
+
+  async function doLogin() {
+    const u   = document.getElementById('u').value.trim();
+    const p   = document.getElementById('p').value.trim();
+    const btn = document.getElementById('btn');
+    document.getElementById('msg').className = 'msg';
+    if (!u || !p) { show('err','Please enter username and password.'); return; }
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+      const res  = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p}) });
+      const data = await res.json();
+      if (!res.ok) { show('err', data.message||'Invalid credentials.'); btn.disabled=false; btn.textContent='Sign in'; return; }
+      localStorage.setItem('jwt_token', data.token);
+      localStorage.setItem('user_role',  data.user.role);
+      localStorage.setItem('user_name',  data.user.name);
+      show('ok','Authenticated. Redirecting...');
+      setTimeout(() => { window.location.href = data.user.role==='faculty'?'/faculty':'/student'; }, 800);
+    } catch(e) { show('err','Server unreachable. Is the server running?'); btn.disabled=false; btn.textContent='Sign in'; }
+  }
+
+  function show(type, text) { const el=document.getElementById('msg'); el.className='msg '+type; el.textContent=text; }
+  document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  if (localStorage.getItem('jwt_token')) { const r=localStorage.getItem('user_role'); if(r) window.location.href=r==='faculty'?'/faculty':'/student'; }
+</script>
+</body>
+</html>
